@@ -1,0 +1,23 @@
+{
+  "name": "cmpiler-final-mp",
+  "version": "1.0.0",
+  "description": "CMPILER Final Project: PASCALete",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/junaaaaloo/CMPILER-FINAL-MP.git"
+  },
+  "keywords": [
+    "CMPILER",
+    "MP"
+  ],
+  "author": "Gaba, Ngo, Ticug",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/junaaaaloo/CMPILER-FINAL-MP/issues"
+  },
+  "homepage": "https://github.com/junaaaaloo/CMPILER-FINAL-MP#readme"
+}
