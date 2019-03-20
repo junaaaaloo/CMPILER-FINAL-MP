@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title> CMPILER S17 </title>
+        <link href="https://fonts.googleapis.com/css?family=Barlow|Roboto+Condensed|Roboto+Mono" rel="stylesheet">
+        <link rel="stylesheet" href="/styles/index.css">
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    </head>
+
+    <body>
+        <div class = "root">
+            <h1 class = "no-space">
+                CMPILER S17
+            </h1>
+            <h3 class = "no-space">
+                PASCALET
+            </h3>
+            <div class = "header">
+                <h4>
+                    Gaba, Janelle Marie
+                </h4>
+                <h4>
+                    Ngo, Jan Bertel
+                </h4>
+                <h4>
+                    Ticug, Jonal Ray
+                </h4>
+            </div>
+            <h3 class = "no-space"> Source Code </h3>
+            <textarea placeholder="Enter PASCAL code here." id="code"></textarea>
+            <h3 class = "no-space"> Input </h3>
+            <textarea placeholder="Enter input here." id="input"></textarea>
+            <br>
+            <button id = "compile"> Compile and Run </button>
+            <div>    
+                <h3> Output </h3>
+                <div id="output"></div>
+            </div>
+        </div>
+    </body>
+    <script>
+        $("#compile").click(() => {
+            $.post( "compile", { code: $("#code").val(), input: $("#input").val() })
+                .done(function( output ) {
+                    console.log(output)
+                    $("div#output").html(JSON.stringify(output));
+                });
+        })
+    </script>
+</html>

@@ -1,0 +1,37 @@
+let keywords = [
+    /* DATA TYPES */
+    "character",
+    "integer",
+    "string",
+    "boolean",
+    "true",
+    "false",
+    /* PROGRAM */
+    "program",
+    "begin",
+    "end",
+    /* DECLARATION */
+    "var",
+    "function",
+    "if",
+    "then",
+    "else",
+    "for",
+    "to",
+    "do"
+]
+
+let rules = [
+    { token: true, expression: /\'.'/, type: "CHARACTER" },
+    { token: true, expression: /\'.*\'/, type: "STRING LITERAL" },
+    { token: false, expression: /{.*}|\(\*.*\*\)/, type: "COMMENTS" },
+    { token: true, expression: /[\+\-]?\d+/, type: "INTEGER LITERAL" },
+    { token: true, expression: /;/, type: "SEMICOLON" },
+    { token: true, expression: /,/, type: "COMMA" },
+    { token: true, expression: /[+/*()=-]|<|>|<=|>=|:=|:/, type: "OPERATOR" },
+    { token: true, expression: /[$a-zA-Z_]+[A-Za-z0-9_]*/, type: "IDENTIFIER" },
+    { token: false, expression: /\s/, type: "WHITESPACE" },
+]
+
+module.exports.keywords = keywords
+module.exports.rules = rules
