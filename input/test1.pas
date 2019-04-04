@@ -1,11 +1,12 @@
-program test1;
+program test5;
 
 (* BASICS TEST *)
 var 
-    a: integer;
-
+    a, b, c: integer;
 begin
-    writeln('HELLO WORLD!');
-    readln(a);
-    writeln('Value of a: ', a);
-end;
+    a := readln('Input number 1: ');
+    b := readln('Input number 2: ');
+    c := a * (a + b) * b;
+    writeln('----');
+    writeln('a * (a + b) * b = ', c);
+end.

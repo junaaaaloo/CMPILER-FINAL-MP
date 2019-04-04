@@ -5,9 +5,11 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <title> CMPILER S17 </title>
-        <link href="https://fonts.googleapis.com/css?family=Barlow|Roboto+Condensed|Roboto+Mono" rel="stylesheet">
         <link rel="stylesheet" href="/styles/index.css">
-        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        
+        <!-- LIBRARY CSS -->
+        <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Barlow|Roboto+Condensed|Roboto+Mono" rel="stylesheet">
     </head>
 
     <body>
@@ -30,7 +32,7 @@
                 </h4>
             </div>
             <h3 class = "no-space"> Source Code </h3>
-            <textarea placeholder="Enter PASCAL code here." id="code"></textarea>
+            <div id = "code"> </div>
             <h3 class = "no-space"> Input </h3>
             <textarea placeholder="Enter input here." id="input"></textarea>
             <br>
@@ -39,9 +41,14 @@
                 <h3> Output </h3>
                 <div id="output"></div>
             </div>
-        </div>
+        </div>    
     </body>
+    <!-- LIBRARY JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
     <script>
+        let code = new Quill('#code'); 
         $("#compile").click(() => {
             $.post( "compile", { code: $("#code").val(), input: $("#input").val() })
                 .done(function( output ) {
@@ -49,5 +56,7 @@
                     $("div#output").html(JSON.stringify(output));
                 });
         })
+
+        
     </script>
 </html>

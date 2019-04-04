@@ -3,13 +3,14 @@ const Lexer = require('lex')
 /* PERSONAL MODULES */
 const values = require('./values')
 
+class LexicalError extends Error {
+
+}
+
 tokens = []
 const lexer = new Lexer((token) => {
     lexer.debug && console.log("[" + token + "]" + " Unexpected character")
-    return {
-        status: "ERROR",
-        message: "Unexpected character token: \"" + token + "\""
-    }
+    throw new LexicalError("Unexpected character token: \'" + token + "\'")
 })
 
 tokens = []
@@ -20,11 +21,11 @@ lexer.setDebug = (condition) => {
 
 for (i in values.keywords) {
     let keyword = values.keywords[i]
-    let expression = new RegExp(keyword,"g")
+    let expression = new RegExp(keyword,"i")
     let handler = (token) => {
         lexer.debug && console.log("[" + token + "] (KEYWORD)")
         tokens.push({
-            "value": token,
+            "value": token.toLowerCase(),
             "type": "KEYWORD"
         })
     }
@@ -34,7 +35,7 @@ for (i in values.keywords) {
 
 for (i in values.rules) {
     let rule = values.rules[i]
-    let expression = new RegExp(rule.expression, "g")
+    let expression = new RegExp(rule.expression, "i")
     let handler = (token) => {
         if (rule.type && rule.token) {
             lexer.debug && console.log("[" + token + "] (" + rule.type + ")")

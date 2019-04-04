@@ -54,11 +54,8 @@ div.header h4  {
     padding: 0px 10px;
 }
 
-textarea#code {
-    max-width: 800px;
-    width: 800px;
-    height: 30vh;
-    border: 1px solid black;
+div#code {
+    font-family: "Liberation Mono";
 }
 
 textarea#input {
@@ -75,8 +72,8 @@ div#output {
     border-radius: 5px;
     text-align: left;
     padding: 10px;
+    font-family: "Liberation Mono";
     margin: 0 auto;
-    font-family: "Roboto Mono";
 }
 
 span.red {

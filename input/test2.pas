@@ -1,9 +1,9 @@
-program test1;
+program test2;
 
 (* BASICS TEST *)
 var 
     number: integer;
-    letter: character;
+    letter, letter2: character;
     statement: string;
     condition: boolean;
 begin
@@ -11,4 +11,4 @@ begin
     letter := 'a';
     statement := 'testing';
     condition := true;
-end;
+end.

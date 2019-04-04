@@ -1,17 +1,24 @@
 program test6;
 
-(* FUNCTIONS TEST *)
-function max (num1, num2: integer): integer;
+(* function returning the max between two numbers *)
+function max(num1, num2: integer): integer;
+
+var
+   (* local variable declaration *)
+   result: integer;
+
+begin
+   if (num1 > num2) then
+      result := num1
+   
+   else
+      result := num2;
+   max := result;
+end;
+
 var 
-    result: integer;
+   i:integer;
 
 begin
-    if (num1 > num2) then
-        max := num1
-    else
-        max := num2;
-end;
-
-begin
-    writeln(max(10, 100));
-end;
+   writeln(max(1, 3));
+end.
