@@ -1,8 +1,9 @@
 let keywords = [
     /* DATA TYPES */
-    "character",
+    "char",
     "integer",
     "string",
+    "real",
     "boolean",
     "array",
     "true",
@@ -20,18 +21,22 @@ let keywords = [
     "for",
     "to",
     "of",
-    "do"
+    "do",
+    /* OPERATORS */
+    "mod",
+    "div"
 ]
 
 let rules = [
-    { token: true, expression: /\'.'/, type: "CHARACTER LITERAL" },
-    { token: true, expression: /\'.*\'/, type: "STRING LITERAL" },
+    { token: false, expression: /[\+\-]?[\d]+\.[\d]+/, type: "REAL" },
+    { token: true, expression: /\'.'/, type: "CHARACTER" },
+    { token: true, expression: /\'.*\'/, type: "STRING" },
     { token: false, expression: /{.*}|\(\*.*\*\)/, type: "COMMENTS" },
-    { token: true, expression: /[\+\-]?\d+/, type: "INTEGER LITERAL" },
+    { token: true, expression: /[\+\-]?\d+/, type: "INTEGER" },
     { token: true, expression: /;/, type: "SEMICOLON" },
     { token: true, expression: /\./, type: "EOF" },
     { token: true, expression: /,/, type: "COMMA" },
-    { token: true, expression: /[%+/*()=\-\[\]]|<|>|<=|>=|:=|:/, type: "OPERATOR" },
+    { token: true, expression: /[%+/*()=\-\[\]]|<=|>=|:=|:|<>|<|>/, type: "OPERATOR" },
     { token: true, expression: /[$a-zA-Z_]+[A-Za-z0-9_]*/, type: "IDENTIFIER" },
     { token: true, expression: /\n/, type: "NEWLINE" },
     { token: false, expression: /\s/, type: "WHITESPACE" }

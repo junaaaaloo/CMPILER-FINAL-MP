@@ -4,6 +4,7 @@ const PI = 3;
 var A, B, C, J, sum, i: integer;
     D: boolean;
     numbers : array[1..5] of integer;
+    r, f,e: integer;
 	
 procedure operationsTwo(X: integer);
 var A, Z: integer;
@@ -16,9 +17,9 @@ Begin {operationsTwo}
 	writeln(Z);
 	Z := X * 2;
 	writeln(Z);
-	Z := X % 2;
+	Z := X mod 2;
 	writeln(Z);
-	A := X / 2;
+	A := X div 2;
 	writeln(A);
 end; {operationsTwo}
 

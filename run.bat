@@ -1,4 +1,4 @@
 cd models
-call jison pascalet.jison
+call jison pascalet.y
 cd ..
 call node cli.js %1

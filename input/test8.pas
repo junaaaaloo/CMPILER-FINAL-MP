@@ -34,9 +34,9 @@ Begin {MAIN}
    { *** 1 *** }
    P1(Y,Z);
    X:=0; Y:=0; Z:=0;
-   if (x=y) then
+   if (X=Y) then
       Begin
-         Y := x;
+         Y := X;
       end;
    { *** 4 *** }
 End. {MAIN}
