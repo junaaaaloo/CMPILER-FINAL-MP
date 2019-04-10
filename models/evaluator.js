@@ -281,6 +281,8 @@ function evaluate (AST) {
                 })
             case "div":
             case "/":
+                if (evaluate(AST.args[1]).value == 0)
+                    throw new Error("[RUNTIME] Error division by 0")
                 return evaluate({
                     type: AST.data_type,
                     value: evaluate(AST.args[0]).value / evaluate(AST.args[1]).value
@@ -292,6 +294,8 @@ function evaluate (AST) {
                 }
             case "mod":
             case "%":
+                if (evaluate(AST.args[1]).value == 0)
+                    throw new Error("[RUNTIME] Error division by 0")
                 return evaluate({
                     type: AST.data_type,
                     value: evaluate(AST.args[0]).value % evaluate(AST.args[1]).value
