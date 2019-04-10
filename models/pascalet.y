@@ -998,7 +998,6 @@ for_loop:
 while_loop:
     WHILE expression DO statement_blocks
         { 
-            semantics.declared(symbol, $2, scope.peek())
             semantics.types($2, ["boolean"])
             $$ = { 
                 type: "iterative operator", 
@@ -1011,12 +1010,11 @@ while_loop:
 repeat_until_loop:
     REPEAT statement_list UNTIL expression
         {
-            semantics.declared(symbol, $2, scope.peek())
-            semantics.types($2, ["boolean"])
+            semantics.types($4, ["boolean"])
             $$ = { 
                 type: "iterative operator", 
                 operator: "repeat-until", 
                 statements: $2,
-                condition: $2
+                condition: $4
             } 
         };

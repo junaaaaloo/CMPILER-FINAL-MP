@@ -430,6 +430,22 @@ function evaluate (AST) {
                 }
                 symbol_table[AST.variable.value][scope[0]].value = limit
                 break;
+            case "while":
+                while (evaluate(AST.condition).value) {
+                    for (j in AST.statements) {
+                        let statement = AST.statements[j]
+                        evaluate(statement)
+                    }
+                }
+                break;
+            case "repeat-until":
+                do {
+                    for (j in AST.statements) {
+                        let statement = AST.statements[j]
+                        evaluate(statement)
+                    }
+                } while (evaluate(AST.condition).value)
+                break;
         }
     }
 }

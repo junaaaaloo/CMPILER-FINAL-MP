@@ -758,7 +758,6 @@ case 109:
 break;
 case 110:
  
-            semantics.declared(symbol, $$[$0-2], scope.peek())
             semantics.types($$[$0-2], ["boolean"])
             this.$ = { 
                 type: "iterative operator", 
@@ -770,13 +769,12 @@ case 110:
 break;
 case 111:
 
-            semantics.declared(symbol, $$[$0-2], scope.peek())
-            semantics.types($$[$0-2], ["boolean"])
+            semantics.types($$[$0], ["boolean"])
             this.$ = { 
                 type: "iterative operator", 
                 operator: "repeat-until", 
                 statements: $$[$0-2],
-                condition: $$[$0-2]
+                condition: $$[$0]
             } 
         
 break;
