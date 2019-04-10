@@ -8,7 +8,7 @@ let default_values = {
     "integer": 0,
     "boolean": true,
     "real": 0.0,
-    "array": []
+    "array": {}
 }
 
 function die (message) {
@@ -51,7 +51,8 @@ let routines = {
             for (i in args) {
                 
                 let input =  scanner.question();
-                if (args[i].data_type != determine_type(input))
+                
+                if (args[i].data_type != determine_type(input) && args[i].data_type != "string")
                     die("[RUNTIME] Datatype mismatch: " + args[i].data_type + " != " + determine_type(input))
                 
                 if (args[i].constant)
@@ -138,15 +139,19 @@ function evaluate (AST) {
                         }
                         
                         evaluate(this.data)
-                        let returned_data = (symbol_table[this.data.name.value][scope[0]])
+                        
+
+                        if (this.data.return_type) {
+                            let returned_data = (symbol_table[this.data.name.value][scope[0]])
+                            return returned_data
+                        }
+
                         sc = scope.shift();
                         for (vars in symbol_table) 
                             delete symbol_table[vars][sc]
                             if (symbol_table[vars] == {})
                                 delete symbol_table[vars]
 
-                        if (this.data.return_type)
-                            return returned_data
                                 
                     },
                     data: subroutine
@@ -167,11 +172,11 @@ function evaluate (AST) {
                 "scope": scope[0]
             }
 
-            if (!symbol_table[constant_values[i].name.value])
-                symbol_table[constant_values[i].name.value][scope[0]] = []
+            let constant_name = constant_values[i].name.value
+            if (!symbol_table[constant_name])
+                symbol_table[constant_name] = { }
 
-            
-            symbol_table[constant_values[i].name.value].unshift(const_value)
+            symbol_table[constant_name][scope[0]] = const_value
             
         }
 
@@ -182,7 +187,7 @@ function evaluate (AST) {
             for (j in declaration.name) {
                     
                 let declaration_symbol = {
-                    "value": default_values[declaration.data_type],
+                    "values": default_values[declaration.data_type.name ? declaration.data_type.name : declaration.data_type],
                     "data_type": declaration.data_type,
                     "scope": scope[0]
                 }
@@ -190,6 +195,18 @@ function evaluate (AST) {
                 if (!symbol_table[declaration.name[j].value])
                     symbol_table[declaration.name[j].value] = { }
                 
+                if (declaration.data_type && declaration.data_type.name == "array") {
+                    lower = evaluate({type:'integer', value: declaration_symbol.data_type.range[0].value}).value
+                    upper = evaluate({type:'integer', value: declaration_symbol.data_type.range[1].value}).value
+                    
+                    for (let k = lower; k <= upper; k++) {
+                        declaration_symbol.values[k] = {
+                            type: declaration_symbol.data_type.data_type,
+                            value: default_values[declaration_symbol.data_type.data_type]
+                        }
+                    }
+                }
+
                 symbol_table[declaration.name[j].value][scope[0]] = declaration_symbol
             }
         }
@@ -246,8 +263,9 @@ function evaluate (AST) {
     }
 
     if (AST.type == "array access") {
-        console.log(AST)
+        return symbol_table[AST.name][scope[0]].values[evaluate(AST.args).value]
     }
+
 
     if (AST.type == "binary operator") {
         switch(AST.operator) {
@@ -272,6 +290,7 @@ function evaluate (AST) {
                     type: AST.data_type,
                     value: evaluate(AST.args[0]).value * evaluate(AST.args[1]).value
                 }
+            case "mod":
             case "%":
                 return evaluate({
                     type: AST.data_type,
@@ -285,7 +304,7 @@ function evaluate (AST) {
             case ":":
                 return {
                     type: "string",
-                    value: evaluate(AST.args[0]).value.padStart(evaluate(AST.args[1]).value)
+                    value: evaluate(AST.args[0]).value.toString().padStart(evaluate(AST.args[1]).value)
                 }
             case ">":
                 return {
@@ -332,7 +351,7 @@ function evaluate (AST) {
 
     if (AST.type == "call") {
         let arguments = []
-
+        
         for (i in AST.args) {
             arguments.push(evaluate(AST.args[i]))
         }

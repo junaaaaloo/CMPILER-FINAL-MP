@@ -15,6 +15,7 @@ var Y, Z: integer;
       X := X+Y;
       Z := Z+N;
     { *** 2 *** }
+      writeln(X, Y, Z, N);
       P0(Z);
    end;
 begin {P2}
@@ -28,10 +29,12 @@ begin {P1}
    Z := X+C; 
    P2(X);
    { *** 3 *** }
+      writeln(X, Y, Z, C);
 end; {P1}
 Begin {MAIN}
    X:=0; Y:=1; Z:=3;
    { *** 1 *** }
+   writeln(X, Y, Z);
    P1(Y,Z);
    X:=0; Y:=0; Z:=0;
    if (X=Y) then
@@ -39,4 +42,5 @@ Begin {MAIN}
          Y := X;
       end;
    { *** 4 *** }
+   writeln(X, Y, Z);
 End. {MAIN}

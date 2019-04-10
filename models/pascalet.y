@@ -368,32 +368,22 @@ main:
 
 declarations_list:
     declarations_item 
-        { 
-            $$ = {
-                const: $1.const ? $1.const : [],
-                variables: $1.variables ? $1.variables : []
-            }
+        {
+            $$ = $1
         } 
     | declarations_item declarations_list
         { 
-            let decl = {
-                const: $1.const ? $1.const : [],
-                variables: $1.variables ? $1.variables : []
-            }
-
-            decl.variables.concat($2.variables)
-            decl.const.concat($2.const)
-            $$ = $1
+            $$ = Object.assign($1, $2)
         };
 
 declarations_item:
     constant_list 
         { 
-            $$ = { const: $1 ? $1 : [] }; 
+            $$ = { const: $1 }; 
         } 
     | routine_variables
         { 
-            $$ = { variables: $1 ? $1 : [] }; 
+            $$ = { variables: $1 }; 
         };
 
 header:
@@ -502,21 +492,32 @@ parameters_list:
 parameter:
     variable_name_list ':' type
         { 
-            $$ = {  type: $3,
+            $$ = {  
+                type: $3,
                 data_type: $3, 
                 name: $1 
             } 
         };
 
 declaration_list:
-    declaration ';'
+    decl_item_list ';'
         { 
             $$ = [ $1 ]
         } 
-    | declaration ';' declaration_list
+    | decl_item_list ';' declaration_list
         { 
             $3.unshift($1); 
             $$ = $3; 
+        };
+        
+decl_item_list:
+    VAR declaration
+        {
+            $$ = $2
+        }
+    | declaration
+        {
+            $$ = $1
         };
 
 declaration:
@@ -594,7 +595,7 @@ assignment:
             semantics.same_types(var1, $3)
 
             $$ = {
-                type: 'identifier',
+                type: 'binary operator',
                 data_type: 'boolean',
                 operator: ':=',
                 args: [
