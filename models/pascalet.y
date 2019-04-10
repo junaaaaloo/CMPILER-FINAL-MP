@@ -441,6 +441,19 @@ procedure_header:
                 }
             }
 
+        } |
+    PROCEDURE routine_name ';'
+        {
+            $$ = { 
+                type: $1, 
+                params: [], 
+                return_type: null, 
+                name: $2 
+            };
+
+            semantics.not_yet_declared(symbol, $2, scope.peek())
+            symbol.add($2.value, 'routine')
+            scope.add($2.value)
         };
 
 routine_name:
@@ -466,6 +479,18 @@ body:
             $$ = [$2] 
         } 
     | BEGIN END
+        { 
+            $$ = [] 
+        }
+    | BEGIN ';' statement_list END
+        {
+            $$ = $3
+        }
+    | BEGIN ';' statement END
+        { 
+            $$ = [$3] 
+        } 
+    | BEGIN ';' END
         { 
             $$ = [] 
         };
@@ -832,9 +857,9 @@ expression:
          } 
     | identifier
         { 
-            semantics.declared(symbol, $1, scope);
-            $$ = symbol.lookup($1)
-            $$.type = "identifier"
+            $$ = semantics.declared(symbol, $1, scope);
+            $$ = $$ ? $$ : symbol.lookup($1)
+            $$.type = $$.type ? $$.type : "identifier"
         } 
     | identifier '(' function_parameter_list ')'
         { 

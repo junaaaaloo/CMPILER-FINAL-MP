@@ -147,11 +147,11 @@ function evaluate (AST) {
                         }
 
                         sc = scope.shift();
-                        for (vars in symbol_table) 
+                        for (vars in symbol_table) {
                             delete symbol_table[vars][sc]
                             if (symbol_table[vars] == {})
                                 delete symbol_table[vars]
-
+                        }
                                 
                     },
                     data: subroutine

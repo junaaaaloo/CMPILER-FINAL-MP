@@ -61,10 +61,26 @@ module.exports = {
         for (i in values.routines) {
             let routine = values.routines[i];
             if (routine.name == item.value) 
-                return;
+                return {
+                    type: 'call',
+                    return_type: routine.return_type,
+                    name: {'value': routine.name, type: 'identifier'} , 
+                    args: [] 
+                };
         }
 
-        if (!symbol.lookup(item))
+        let declared = symbol.lookup(item)
+        if (declared.data_type == "routine") {
+            
+            return {
+                type: 'call',
+                return_type: declared.return_type,
+                name: {'value': declared.value, type: 'identifier'} , 
+                args: declared.args
+            }
+        }
+
+        if (!declared)
             throw new Error("[SEMANTIC] " + item.value + " is not declared within the scope (" + scope.peek() + ")")
     },
     not_yet_declared (symbol, item, scope) {
