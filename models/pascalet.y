@@ -134,10 +134,10 @@ true|false                          return 'BOOLEAN';
 %left IDENTIFIER
 %left CONST
 %left PROCEDURE FUNCTION
-%left '-' '+' OR
-%left '*' '/' '%' AND, MOD, DIV
 %left '<', '<=', '>', '>='
 %left '=', '<>'
+%left '-' '+' OR
+%left '*' '/' '%' AND, MOD, DIV
 %left NOT UMINUS UPLUS
 %left '(' ')'
 %left PROGRAM
@@ -673,7 +673,11 @@ conditional:
             } 
         };
 statement_blocks:
-    statement
+    empty 
+        {
+            $$ = []
+        }
+    | statement
         { 
             $$ = [ $1 ] 
         } 
@@ -968,6 +972,9 @@ iterative_loop:
 for_loop:
     FOR identifier ':=' expression TO expression DO statement_blocks
         { 
+            semantics.declared(symbol, $2, scope.peek())
+            semantics.types($4, ["integer"])
+            semantics.types($6, ["integer"])
             $$ = { 
                 type: "iterative operator", 
                 operator: $1, 

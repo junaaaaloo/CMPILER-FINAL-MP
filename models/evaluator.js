@@ -118,12 +118,10 @@ function evaluate (AST) {
                             symbol_table[this.data.name.value][scope[0]] = param_symbol
                         }
 
-
                         for (i in this.data.params) {
                             let param_data = this.data.params[i]
                             for (j in param_data.name) {
                                 let param = param_data.name[j]
-                                
                                 let param_symbol = {
                                     "value": args[c].value,
                                     "data_type": args[c].data_type,
@@ -187,7 +185,7 @@ function evaluate (AST) {
             for (j in declaration.name) {
                     
                 let declaration_symbol = {
-                    "values": default_values[declaration.data_type.name ? declaration.data_type.name : declaration.data_type],
+                    "value": default_values[declaration.data_type.name ? declaration.data_type.name : declaration.data_type],
                     "data_type": declaration.data_type,
                     "scope": scope[0]
                 }
@@ -200,7 +198,7 @@ function evaluate (AST) {
                     upper = evaluate(declaration_symbol.data_type.range[1]).value
                     
                     for (let k = lower; k <= upper; k++) {
-                        declaration_symbol.values[k] = {
+                        declaration_symbol.value[k] = {
                             type: declaration_symbol.data_type.data_type,
                             value: default_values[declaration_symbol.data_type.data_type]
                         }
@@ -268,7 +266,7 @@ function evaluate (AST) {
     }
 
     if (AST.type == "array access") {
-        return symbol_table[AST.name][scope[0]].values[evaluate(AST.args).value]
+        return symbol_table[AST.name][scope[0]].value[evaluate(AST.args).value]
     }
 
 
@@ -364,7 +362,7 @@ function evaluate (AST) {
         for (i in AST.args) {
             arguments.push(evaluate(AST.args[i]))
         }
-        
+
         return routines[AST.name.value].execute(arguments)
     }
 

@@ -27,7 +27,10 @@ let keywords = [
     "div",
     "and",
     "or",
-    "not"
+    "not",
+    "readln",
+    "write",
+    "writeln"
 ]
 
 let rules = [

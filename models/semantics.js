@@ -51,7 +51,7 @@ module.exports = {
     },
     types (item, types) {
         if (types.indexOf(item.data_type.name) == -1 && types.indexOf(item.data_type) == -1)
-            throw new Error("[SEMANTIC] Datatype of " + item.value + "(" + item.data_type ? item.data_type : item.data_type.name + ") should be " + types.join(", "))
+            throw new Error("[SEMANTIC] Datatype of " + item.value + "(" + (item.data_type ? item.data_type : item.data_type.name) + ") should be " + types.join(", "))
     },
     not_keyword (item) {
         if (values.keywords.indexOf(item) != -1)
@@ -81,7 +81,7 @@ module.exports = {
         }
 
         if (!declared)
-            throw new Error("[SEMANTIC] " + item.value + " is not declared within the scope (" + scope.peek() + ")")
+            throw new Error("[SEMANTIC] " + item.value + " is not declared within the scope (" + scope + ")")
     },
     not_yet_declared (symbol, item, scope) {
         

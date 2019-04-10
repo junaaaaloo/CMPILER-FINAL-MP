@@ -6,8 +6,8 @@ begin
         getTimesThree := Z * 3;
 end;
 
-var Z:integer;
+var i:integer;
 begin
-    Z := getTimesThree(200);
-    write(Z);
+    i := 5;
+    if (i > 4 and i > 3) then getTimesThree(i);
 end.
