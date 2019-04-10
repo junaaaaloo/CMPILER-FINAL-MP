@@ -111,7 +111,6 @@
 "or"                                return 'OR';
 "not"                               return 'NOT';
 <<EOF>>                             return 'EOF';
-char|integer|boolean|string|real    return 'TYPE';
 [\+\-]?\d+\.\d+                     return 'REAL';
 [\+\-]?\d+                          return 'INTEGER';
 true|false                          return 'BOOLEAN';
@@ -119,6 +118,7 @@ true|false                          return 'BOOLEAN';
 \'(\\.|[^'\\])*\'                   return 'STRING';
 [$a-zA-Z_]+[A-Za-z0-9_]*            return 'IDENTIFIER';
 <<EOF>>                             return 'EOF';
+char|integer|boolean|string|real    return 'TYPE';
 
 /lex
 %right routine_list main body
@@ -133,8 +133,8 @@ true|false                          return 'BOOLEAN';
 %left IF 
 %left ELSE
 %left ':' 
+%left TYPE
 %left BEGIN END
-%left IDENTIFIER
 %left CONST
 %left PROCEDURE FUNCTION
 %left '<', '<=', '>', '>='
@@ -143,7 +143,7 @@ true|false                          return 'BOOLEAN';
 %left '*' '/' '%' AND, MOD, DIV
 %left NOT UMINUS UPLUS
 %left '(' ')'
-%left PROGRAM
+%left PROGRAM IDENTIFIER
 /* production rules */
 
 %start pascal

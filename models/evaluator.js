@@ -80,7 +80,12 @@ let routines = {
         }
     }
 }   
-function evaluate (AST) {
+
+function message (str) {
+    process.stdout.write(str)
+    scanner.question(null, {hideEchoBack: true, mask: ""})
+}
+function evaluate (AST, debug) {
     if (!AST) {
         return;
     }
@@ -88,12 +93,14 @@ function evaluate (AST) {
     if (AST.type == "program") {
         scope.unshift(AST.name.value)
         let subroutines = AST.routines
+        debug && message("Running the program " +AST.name.value)
         for (i in subroutines) {
-            evaluate(subroutines[i])
+            evaluate(subroutines[i], debug)
         } 
     }
 
     if (AST.type == "procedure" || AST.type == "function") {
+        debug && message("FUNCTION: " + JSON.stringify(AST))
         if (AST.routines) {
             let subroutines = AST.routines
             for (i in subroutines) {
@@ -136,7 +143,7 @@ function evaluate (AST) {
                             }
                         }
                         
-                        evaluate(this.data)
+                        evaluate(this.data, debug)
                         
                         if (this.data.return_type) {
                             let returned_data = (symbol_table[this.data.name.value][scope[0]])
@@ -194,8 +201,8 @@ function evaluate (AST) {
                     symbol_table[declaration.name[j].value] = { }
                 
                 if (declaration.data_type && declaration.data_type.name == "array") {
-                    lower = evaluate(declaration_symbol.data_type.range[0]).value
-                    upper = evaluate(declaration_symbol.data_type.range[1]).value
+                    lower = evaluate(declaration_symbol.data_type.range[0], debug).value
+                    upper = evaluate(declaration_symbol.data_type.range[1], debug).value
                     
                     for (let k = lower; k <= upper; k++) {
                         declaration_symbol.value[k] = {
@@ -213,7 +220,7 @@ function evaluate (AST) {
 
         for (i in statements) {
             let statement = AST.body[i]
-            evaluate(statement)
+            evaluate(statement, debug)
         }
     }
 
@@ -249,24 +256,24 @@ function evaluate (AST) {
             case "-":
                 return {
                     type: AST.data_type,
-                    value: evaluate(AST.args[0]).value * -1
+                    value: evaluate(AST.args[0], debug).value * -1
                 }
             case "+":
                 return {
                     type: AST.data_type,
-                    value: evaluate(AST.args[0]).value
+                    value: evaluate(AST.args[0], debug).value
                 }
             case "not":
                 return {
                     type: "boolean",
-                    value: !evaluate(AST.args[0]).value
+                    value: !evaluate(AST.args[0], debug).value
                 }
         }
     
     }
 
     if (AST.type == "array access") {
-        return symbol_table[AST.name][scope[0]].value[evaluate(AST.args).value]
+        return symbol_table[AST.name][scope[0]].value[evaluate(AST.args, debug).value]
     }
 
 
@@ -275,83 +282,83 @@ function evaluate (AST) {
             case "+":
                 return evaluate({
                     type: AST.data_type,
-                    value: evaluate(AST.args[0]).value + evaluate(AST.args[1]).value
+                    value: evaluate(AST.args[0], debug).value + evaluate(AST.args[1], debug).value
                 })
             case "-":
                 return evaluate({
                     type: AST.data_type,
-                    value: evaluate(AST.args[0]).value - evaluate(AST.args[1]).value
+                    value: evaluate(AST.args[0], debug).value - evaluate(AST.args[1], debug).value
                 })
             case "div":
             case "/":
-                if (evaluate(AST.args[1]).value == 0)
+                if (evaluate(AST.args[1], debug).value == 0)
                     throw new Error("[RUNTIME] Error division by 0")
                 return evaluate({
                     type: AST.data_type,
-                    value: evaluate(AST.args[0]).value / evaluate(AST.args[1]).value
+                    value: evaluate(AST.args[0], debug).value / evaluate(AST.args[1], debug).value
                 })
             case "*":
                 return {
                     type: AST.data_type,
-                    value: evaluate(AST.args[0]).value * evaluate(AST.args[1]).value
+                    value: evaluate(AST.args[0], debug).value * evaluate(AST.args[1], debug).value
                 }
             case "mod":
             case "%":
-                if (evaluate(AST.args[1]).value == 0)
+                if (evaluate(AST.args[1], debug).value == 0)
                     throw new Error("[RUNTIME] Error division by 0")
                 return evaluate({
                     type: AST.data_type,
-                    value: evaluate(AST.args[0]).value % evaluate(AST.args[1]).value
+                    value: evaluate(AST.args[0], debug).value % evaluate(AST.args[1], debug).value
                 })
             case ":=":
                 return {
                     type: AST.data_type,
-                    value: evaluate(AST.args[0]).value = evaluate(AST.args[1]).value
+                    value: evaluate(AST.args[0], debug).value = evaluate(AST.args[1], debug).value
                 }
             case ":":
                 return {
                     type: "string",
-                    value: evaluate(AST.args[0]).value.toString().padStart(evaluate(AST.args[1]).value)
+                    value: evaluate(AST.args[0], debug).value.toString().padStart(evaluate(AST.args[1], debug).value)
                 }
             case ">":
                 return {
                     type: "boolean",
-                    value: evaluate(AST.args[0]).value > evaluate(AST.args[1]).value
+                    value: evaluate(AST.args[0], debug).value > evaluate(AST.args[1], debug).value
                 }
             case "<":
                 return {
                     type: "boolean",
-                    value: evaluate(AST.args[0]).value < evaluate(AST.args[1]).value
+                    value: evaluate(AST.args[0], debug).value < evaluate(AST.args[1], debug).value
                 }
             case "=":
                 return {
                     type: "boolean",
-                    value: evaluate(AST.args[0]).value == evaluate(AST.args[1]).value
+                    value: evaluate(AST.args[0], debug).value == evaluate(AST.args[1], debug).value
                 }
             case "<>":
                 return {
                     type: "boolean",
-                    value: evaluate(AST.args[0]).value != evaluate(AST.args[1]).value
+                    value: evaluate(AST.args[0], debug).value != evaluate(AST.args[1], debug).value
                 }
             case ">=":
                 return {
                     type: "boolean",
-                    value: evaluate(AST.args[0]).value >= evaluate(AST.args[1]).value
+                    value: evaluate(AST.args[0], debug).value >= evaluate(AST.args[1], debug).value
                 }
             case "<=":
                 return {
                     type: "boolean",
-                    value: evaluate(AST.args[0]).value >= evaluate(AST.args[1]).value
+                    value: evaluate(AST.args[0], debug).value >= evaluate(AST.args[1], debug).value
                 }
             case "and":
                 return {
                     type: "boolean",
-                    value: evaluate(AST.args[0]).value && evaluate(AST.args[1]).value
+                    value: evaluate(AST.args[0], debug).value && evaluate(AST.args[1], debug).value
                 }
             case "or":
                 return {
                     type: "boolean",
-                    value: evaluate(AST.args[0]).value || evaluate(AST.args[1]).value
+                    value: evaluate(AST.args[0], debug).value || evaluate(AST.args[1], debug).value
                 }
         }
     }
@@ -360,7 +367,7 @@ function evaluate (AST) {
         let arguments = []
         
         for (i in AST.args) {
-            arguments.push(evaluate(AST.args[i]))
+            arguments.push(evaluate(AST.args[i], debug))
         }
 
         return routines[AST.name.value].execute(arguments)
@@ -381,9 +388,9 @@ function evaluate (AST) {
             case ':':
                 return evaluate({
                     type: "string",
-                    value: evaluate(AST.args[0]).value
-                        .toFixed(evaluate(AST.args[2]).value)
-                        .toString().padStart(evaluate(AST.args[1].value))
+                    value: evaluate(AST.args[0], debug).value
+                        .toFixed(evaluate(AST.args[2], debug).value)
+                        .toString().padStart(evaluate(AST.args[1].value, debug))
                 })
         }
     }
@@ -391,23 +398,23 @@ function evaluate (AST) {
     if (AST.type == "conditional operator") {
         switch(AST.operator) {
             case "if":
-                if (evaluate(AST.condition).value) {
+                if (evaluate(AST.condition, debug).value) {
                     for (i in AST.if) {
                         let statement = AST.if[i]
-                        evaluate(statement);
+                        evaluate(statement, debug);
                     }
                 }
                 break;
             case "if-else":
-                if (evaluate(AST.condition).value) {
+                if (evaluate(AST.condition, debug).value) {
                     for (i in AST.if) {
                         let statement = AST.if[i]
-                        evaluate(statement);
+                        evaluate(statement, debug);
                     }
                 } else {
                     for (i in AST.else) {
                         let statement = AST.else[i]
-                        evaluate(statement);
+                        evaluate(statement, debug);
                     }
                 }
                 break;
@@ -417,24 +424,24 @@ function evaluate (AST) {
     if (AST.type == "iterative operator") {
         switch(AST.operator) {
             case "for":
-                let limit = evaluate(AST.range[1]).value
-                let start = evaluate(AST.range[0]).value
+                let limit = evaluate(AST.range[1], debug).value
+                let start = evaluate(AST.range[0], debug).value
                 
                 for (symbol_table[AST.variable.value][scope[0]].value = start; 
                     symbol_table[AST.variable.value][scope[0]].value <= limit; 
                     symbol_table[AST.variable.value][scope[0]].value++) {
                     for (j in AST.statements) {
                         let statement = AST.statements[j]
-                        evaluate(statement);
+                        evaluate(statement, debug);
                     }
                 }
                 symbol_table[AST.variable.value][scope[0]].value = limit
                 break;
             case "while":
-                while (evaluate(AST.condition).value) {
+                while (evaluate(AST.condition, debug).value) {
                     for (j in AST.statements) {
                         let statement = AST.statements[j]
-                        evaluate(statement)
+                        evaluate(statement, debug)
                     }
                 }
                 break;
@@ -442,9 +449,9 @@ function evaluate (AST) {
                 do {
                     for (j in AST.statements) {
                         let statement = AST.statements[j]
-                        evaluate(statement)
+                        evaluate(statement, debug)
                     }
-                } while (evaluate(AST.condition).value)
+                } while (evaluate(AST.condition, debug).value)
                 break;
         }
     }

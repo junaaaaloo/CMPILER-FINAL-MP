@@ -40,6 +40,7 @@ let rules = [
     { token: true, expression: /\'.\'/, type: "CHARACTER" },
     { token: true, expression: /\'.*\'/, type: "STRING" },
     { token: true, expression: /[\+\-]?\d+/, type: "INTEGER" },
+    { token: true, expression: /true|false/, type: "BOOLEAN" },
     { token: true, expression: /;/, type: "SEMICOLON" },
     { token: true, expression: /\./, type: "EOF" },
     { token: true, expression: /,/, type: "COMMA" },
