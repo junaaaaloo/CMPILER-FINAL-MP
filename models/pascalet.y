@@ -1,6 +1,6 @@
 %{
     let scope = {
-        data: [],
+        data: [        ],
         add (item) {
             scope.data.unshift(item)
         },
@@ -15,30 +15,30 @@
     let symbol = {
         data: {},
         lookup (symbol_item) {
-            if(!symbol.data[scope.peek()])
-                return null;
             for (i in scope.data) {
                 block = scope.data[i]
                 let symbols = symbol.data[block]
                 
-                for (i in symbols) {
-                    sym = symbols[i]
-                    if (sym.name == symbol_item.value)
+                for (j in symbols) {
+                    sym = symbols[j]
+                    if (sym.value == symbol_item.value) {
+                        sym.scope = block
                         return sym
+                    }
                 }
             }
             return null;
         },
-        add (symbol_item, type, args, return_type) {
-            if (symbol.lookup(symbol_item))
-                error.throw(symbol_item + " was already defined in " + scope.peek())
+        add (symbol_item, type, args, return_type, constant) {
             if (!symbol.data[scope.peek()])
                 symbol.data[scope.peek()] = []
-            symbol.data[scope.peek()].push({
-                name: symbol_item,
+
+            symbol.data[scope.peek() ? scope.peek() : "main"].push({
+                value: symbol_item,
+                return_type: return_type,
                 data_type: type,
                 args: args,
-                return_type: return_type
+                constant: constant ? constant : false
             })
         },
         debug () {
@@ -108,7 +108,7 @@
 "or"                                return 'OR';
 "not"                               return 'NOT';
 <<EOF>>                             return 'EOF';
-char|integer|boolean|string         return 'TYPE';
+char|integer|boolean|string|real    return 'TYPE';
 [\+\-]?\d+\.\d+                     return 'REAL';
 [\+\-]?\d+                          return 'INTEGER';
 true|false                          return 'BOOLEAN';
@@ -129,16 +129,16 @@ true|false                          return 'BOOLEAN';
 %left NOT
 %left IF 
 %left ELSE
-%left ':'
+%left ':' 
 %left BEGIN END
 %left IDENTIFIER
 %left CONST
 %left PROCEDURE FUNCTION
-%left '<', '<=', '>', '>='
-%left '=', '<>'
 %left '-' '+' OR
 %left '*' '/' '%' AND, MOD, DIV
-%left NOT  
+%left '<', '<=', '>', '>='
+%left '=', '<>'
+%left NOT  UMINUS
 %left '(' ')'
 %left PROGRAM
 /* production rules */
@@ -210,7 +210,7 @@ literal:
         { 
             $$ = { 
                 value: $1, 
-                type: "character"
+                type: "char"
             };
         }
     | string
@@ -237,27 +237,18 @@ type:
             $$ = { 
                 name: $1, 
                 range: [$3, $6], 
-                type: $9 
+                data_type: $9 
             }; 
         };
 
 program:   
-    PROGRAM program_name ';'
+    PROGRAM program_name ';' routine_list main
         { 
+            $5.routines = $4
             $$ = { 
                 type: 'program', 
                 name: $2, 
-                body: [ ] 
-            }; 
-        
-        } 
-    | PROGRAM program_name ';' routine_list main
-        { 
-            $4.unshift($5); 
-            $$ = { 
-                type: 'program', 
-                name: $2, 
-                body: $4
+                routines: [$5]
             }; 
         
         } 
@@ -266,7 +257,7 @@ program:
             $$ = { 
                 type: 'program', 
                 name: $2, 
-                body: [ $4 ] 
+                routines: [ $4 ] 
             }; 
         };
 
@@ -297,8 +288,7 @@ constant:
     identifier '=' literal ';'
         { 
             $$ = {name: $1, value: $3.value, type: $3.type}
-            symbol.add($1.value, $3.type)
-            
+            symbol.add($1.value, $3.type, null, null, true)
         };
     
 routine_list:
@@ -319,22 +309,22 @@ end_block:
 routine:
 	header declarations_list routine_list body end_block
         { 
-            $$ = { type: 'procedure', routines: $3, body: $4};
+            $$ = { routines: $3, body: $4};
             $$ = Object.assign($$, $1, $2); 
         } 
     | header routine_list body end_block
         { 
-            $$ = { type: 'procedure', routines: $2, body: $3};
+            $$ = { routines: $2, body: $3};
             $$ = Object.assign($$, $1); 
         } 
     | header declarations_list body end_block
         { 
-            $$ = { type: 'procedure', routines: [], body: $3 };
+            $$ = { routines: [], body: $3 };
             $$ = Object.assign($$, $1, $2); 
         } 
     | header body end_block
         { 
-            $$ = { type: 'procedure', routines: [], body: $2 };
+            $$ = { routines: [], body: $2 };
             $$ = Object.assign($$, $1); 
         };
 
@@ -379,21 +369,31 @@ main:
 declarations_list:
     declarations_item 
         { 
-            $$ = $1; 
+            $$ = {
+                const: $1.const ? $1.const : [],
+                variables: $1.variables ? $1.variables : []
+            }
         } 
     | declarations_item declarations_list
         { 
-            $$ = Object.assign($1, $2) 
+            let decl = {
+                const: $1.const ? $1.const : [],
+                variables: $1.variables ? $1.variables : []
+            }
+
+            decl.variables.concat($2.variables)
+            decl.const.concat($2.const)
+            $$ = $1
         };
 
 declarations_item:
     constant_list 
         { 
-            $$ = { const: $1 }; 
+            $$ = { const: $1 ? $1 : [] }; 
         } 
     | routine_variables
         { 
-            $$ = { variables: $1 }; 
+            $$ = { variables: $1 ? $1 : [] }; 
         };
 
 header:
@@ -406,16 +406,27 @@ header:
             $$ = $1 
         };
 
-
 function_header:
     FUNCTION routine_name '(' parameters_list ')' ':' type ';'
         { 
             $$ = { 
                 type: $1, 
-                return: $7, 
+                return_type: $7, 
                 params: $4, 
                 name: $2 
             };
+
+            semantics.not_yet_declared(symbol, $2, scope.peek())
+            symbol.add($2.value, 'routine', $4, $7)
+            scope.add($2.value)
+
+            for (x in $4) {
+                let variable = $4[x]
+                for (y in variable.name) {
+                    let var_name = variable.name[y]
+                    symbol.add(var_name.value, variable.data_type)
+                }
+            }
         };
 
 procedure_header:
@@ -424,16 +435,28 @@ procedure_header:
             $$ = { 
                 type: $1, 
                 params: $4, 
+                return_type: null, 
                 name: $2 
             };
+            
+            semantics.not_yet_declared(symbol, $2, scope.peek())
+            symbol.add($2.value, 'routine', $4)
+            scope.add($2.value)
+
+            for (x in $4) {
+                let variable = $4[x]
+                for (y in variable.name) {
+                    let var_name = variable.name[y]
+                    symbol.add(var_name.value, variable.data_type)
+                }
+            }
+
         };
 
 routine_name:
     identifier
         {
-            $$ = $1;
-            symbol.add($1.value, $1.type);
-            scope.add($1.value);
+            $$ = $1
         };
 
 
@@ -479,12 +502,10 @@ parameters_list:
 parameter:
     variable_name_list ':' type
         { 
-            $$ = { 
-                type: $3, 
+            $$ = {  type: $3,
+                data_type: $3, 
                 name: $1 
             } 
-            for (i in $1) 
-                symbol.add($1[i].value, $3)
         };
 
 declaration_list:
@@ -501,10 +522,12 @@ declaration_list:
 declaration:
     variable_name_list ':' type
         { 
-            $$ = { type: $3, name: $1 } 
-            for (i in $1) 
-                symbol.add($1[i].value, $3)
-            
+            $$ = { type: $3, data_type: $3, name: $1 } 
+
+            for (x in $1) {
+                semantics.not_yet_declared(symbol, $1[x], scope.peek())
+                symbol.add($1[x].value, $3)
+            }
         };
 
 variable_name_list:
@@ -533,10 +556,10 @@ statement_list:
         };
 
 statement: 
-    assignment
-        { 
-            $$ = $1; 
-        } 
+    assignment 
+        {
+            $$ = $1;
+        }
     | expression
         { 
             $$ = $1; 
@@ -551,13 +574,18 @@ statement:
         };
  
 assignment:
-    expression ':=' expression
+    identifier ':=' expression
         { 
+            semantics.declared(symbol, $1)
+            let var1 = symbol.lookup($1)
+            semantics.same_types(var1, $3, {"string":"char", "real":"integer"})
+            semantics.not_constant(var1)
             $$ = { 
                     type: 'binary operator', 
+                    data_type: 'boolean',
                     operator: ':=', 
-                    args: [$1, $3] 
-                } 
+                    args: [$1, $3],
+                }
         };
 
 conditional:
@@ -594,18 +622,19 @@ expression:
     expression '+' expression
         { 
             semantics.same_types($1, $3)
-            semantics.types($1, ["string", "real", "integer"]);
+            semantics.types($1, ["char", "string", "real", "integer"]);
+
             $$ = { 
                 type: 'binary operator', 
-                data_type: $1.data_type,
+                data_type: semantics.assign($1.data_type, $3.data_type),
                 operator: $2, 
                 args: [$1, $3] 
             } 
         } 
     | expression '-' expression
         { 
-            // semantics.types($1, ["integer", "real"]);
-            // semantics.same_types($1, $3)
+            semantics.same_types($1, $3)
+            semantics.types($1, ["integer", "real"]);  
             $$ = { 
                 type: 'binary operator', 
                 data_type: $1.data_type,
@@ -615,17 +644,19 @@ expression:
         } 
     | expression '/' expression
         { 
-            // semantics.types($1, ["integer", "real"]);
-            // semantics.same_types($1, $3)
+            semantics.same_types($1, $3)
+            semantics.types($1, ["real"]);
             $$ = { 
                 type: 'binary operator', 
-                operator: $2, 
                 data_type: $1.data_type,
+                operator: $2, 
                 args: [$1, $3] 
             } 
         } 
     | expression '*' expression
         { 
+            semantics.same_types($1, $3)
+            semantics.types($1, ["integer", "real"]);
             $$ = { 
                 type: 'binary operator', 
                 data_type: $1.data_type,
@@ -635,6 +666,8 @@ expression:
         } 
     | expression '%' expression
         { 
+            semantics.same_types($1, $3)
+            semantics.types($1, ["real"]);
             $$ = { 
                 type: 'binary operator', 
                 data_type: $1.data_type,
@@ -644,96 +677,90 @@ expression:
         } 
     | expression '=' expression
         { 
+            semantics.same_types($1, $3)
+            
             $$ = { 
                 type: 'binary operator', 
-                data_type: $1.data_type,
+                data_type: 'boolean',
                 operator: $2, 
                 args: [$1, $3] 
             } 
         } 
     | expression '<>' expression
         { 
+            semantics.same_types($1, $3)
             $$ = { 
                 type: 'binary operator', 
-                data_type: $1.data_type,
+                data_type: 'boolean',
                 operator: $2, 
                 args: [$1, $3] 
             } 
         } 
     | expression '<' expression
         { 
+            semantics.same_types($1, $3)
             $$ = { 
                 type: 'binary operator',
-                data_type: $1.data_type, 
+                data_type: 'boolean',
                 operator: $2, 
                 args: [$1, $3] 
             } 
         } 
     | expression '>' expression
         { 
+            semantics.same_types($1, $3)
             $$ = { 
                 type: 'binary operator', 
-                data_type: $1.data_type,
+                data_type: 'boolean',
                 operator: $2, 
                 args: [$1, $3] 
             } 
         } 
     | expression '<=' expression
         { 
+            semantics.same_types($1, $3)
             $$ = { 
                 type: 'binary operator', 
-                data_type: $1.data_type,
+                data_type: 'boolean',
                 operator: $2, 
                 args: [$1, $3] 
             } 
         } 
     | expression '>=' expression
         { 
+            semantics.same_types($1, $3)
             $$ = { 
                 type: 'binary operator', 
-                data_type: $1.data_type,
+                data_type: 'boolean',
                 operator: $2, 
                 args: [$1, $3] 
             } 
         } 
     | expression 'AND' expression
         { 
+            semantics.same_types($1, $3)
+            semantics.types($1, ["boolean"]);
             $$ = { 
                 type: 'binary operator', 
-                data_type: $1.data_type,
+                data_type: 'boolean',
                 operator: $2, 
                 args: [$1, $3] 
             } 
         }
     | expression 'OR' expression
         { 
+            semantics.same_types($1, $3)
+            semantics.types($1, ["boolean"]);
             $$ = { 
                 type: 'binary operator', 
-                data_type: $1.data_type,
-                operator: $2, 
-                args: [$1, $3] 
-            } 
-        } 
-    | expression 'NOT' expression
-        { 
-            $$ = { 
-                type: 'binary operator', 
-                data_type: $1.data_type,
-                operator: $2, 
-                args: [$1, $3] 
-            } 
-        } 
-    | expression ':' expression
-        { 
-            $$ = { 
-                type: 'binary operator', 
-                data_type: $1.data_type,
                 operator: $2, 
                 args: [$1, $3] 
             } 
         } 
     | expression 'MOD' expression
         { 
+            semantics.same_types($1, $3)
+            semantics.types($1, ["integer"]);
             $$ = { 
                 type: 'binary operator', 
                 data_type: $1.data_type,
@@ -743,6 +770,8 @@ expression:
         } 
     | expression 'DIV' expression
         { 
+            semantics.same_types($1, $3)
+            semantics.types($1, ["integer"]);
             $$ = { 
                 type: 'binary operator', 
                 data_type: $1.data_type,
@@ -752,18 +781,21 @@ expression:
         } 
     | 'NOT' expression
         { 
+            semantics.types($2, ["boolean"]);
+
             $$ = { 
-                type: 'binary operator', 
-                data_type: $1.data_type,
+                type: 'unary operator', 
+                data_type: "boolean",
                 operator: $1, 
                 args: [$2] 
             } 
         } 
-    | '-' expression
+    | '-' expression %prec UMINUS
         { 
+            semantics.types($2, ["integer", "real"]);
             $$ = { 
-                type: 'binary operator', 
-                data_type: $1.data_type,
+                type: 'unary operator', 
+                data_type: $2.data_type,
                 operator: $1, 
                 args: [$2] } 
             } 
@@ -778,27 +810,56 @@ expression:
          } 
     | identifier
         { 
-            semantics.declared(symbol, $1);
+            semantics.declared(symbol, $1, scope);
             $$ = symbol.lookup($1)
+            $$.type = "identifier"
         } 
     | identifier '(' function_parameter_list ')'
         { 
-            $$ = $1
+            semantics.declared(symbol, $1,  scope);
             $$ = { 
-                type: 'call', 
+                type: 'call',
+                return_type: symbol.lookup($1) ? symbol.lookup($1).return_type : null,
                 name: $1, 
                 args: $3 
-            } 
+            }
         } 
-    |
-    identifier '[' expression ']'
-        { 
+    | identifier '[' expression ']'
+        {  
+            semantics.types(symbol.lookup($1), ["array"])
+            semantics.types($3, ["integer"])
+            
             $$ = { 
                 type: 'array access', 
-                name: $1, 
+                data_type: symbol.lookup($1).data_type, 
                 args: $3 
             } 
         };
+
+statement_ternary:
+    expression ':' expression ':' expression
+        {
+            semantics.types($1, ["real"])
+            semantics.types($3, ["integer"])
+            semantics.types($5, ["integer"])
+            $$ = {
+                type: 'ternary operator',
+                data_type: 'string',
+                operator: $2,
+                args: [$1, $3, $5]
+            }
+        }
+    |  expression ':' expression 
+        {
+            semantics.types($3, ["integer"])
+            $$ = {
+                type: 'binary operator',
+                data_type: 'string',
+                operator: $2,
+                args: [$1, $3]
+            }
+        };
+
 
 function_parameter_list:
     empty
@@ -817,7 +878,11 @@ function_parameter_list:
 function_parameter:
     expression
         { 
-            $$ = $1 
+            $$ = $1
+        } |
+    statement_ternary
+        {
+            $$ = $1
         };
 
 iterative_loop:

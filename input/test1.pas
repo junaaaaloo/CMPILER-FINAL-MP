@@ -4,9 +4,11 @@ program test5;
 var 
     a, b, c: integer;
 Begin
-    a := readln('Input number 1: ');
-    b := readln('Input number 2: ');
-    c := a * (a + b) * b;
+    write('ENTER NUMBER 1: ');
+    readln(a);
+    write('ENTER NUMBER 2: ');
+    readln(b);
+    
     writeln('----');
-    writeln('a * (a + b) * b = ', c);
+    writeln('a * b = ', a*b);
 end.

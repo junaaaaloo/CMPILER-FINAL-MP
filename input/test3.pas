@@ -2,9 +2,9 @@ program test3;
 
 (* BASICS TEST *)
 var 
-    number: integer;
+    a: string;
 begin
-    number := (3 + 2) * (9 - (2 - 9) + 3);
-    number := 8 * 5;
-    write(number);
+    a := 'a' + 'b';
+    a := 'a' + a;
+    write(a);
 end.

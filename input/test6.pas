@@ -1,10 +1,9 @@
 program test6;
 
-(* function returning the max between two numbers *)
+(* 
 function max(num1, num2: integer): integer;
-
 var
-   (* local variable declaration *)
+
    result: integer;
 
 begin
@@ -15,10 +14,19 @@ begin
       result := num2;
    max := result;
 end;
+*)
+
+function add (a1, a2:integer):integer;
+var result:integer;
+
+begin
+   result := a1 + a2;
+   add := result;
+end;
 
 var 
    i:integer;
 
 begin
-   writeln(max(1, 3));
+   writeln(add(1, 3));
 end.

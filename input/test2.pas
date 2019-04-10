@@ -2,13 +2,15 @@ program test2;
 
 (* BASICS TEST *)
 var 
-    number: integer;
+    number, number2: integer;
     letter, letter2: char;
     statement: string;
     condition: boolean;
 begin
-    number := -3;
+    number := 1 div 2;
+    writeln(number);
     letter := 'a';
-    statement := 'testing';
-    condition := true
+    statement := 'a';
+    condition := true;
+    writeln(letter);
 end.

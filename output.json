@@ -1,0 +1,177 @@
+
+d:\College\AY1819_Term2\CMPILER\CMPILER-FINAL-MP>cd models 
+
+d:\College\AY1819_Term2\CMPILER\CMPILER-FINAL-MP\models>call cls 
+
+d:\College\AY1819_Term2\CMPILER\CMPILER-FINAL-MP\models>call jison pascalet.y 
+
+d:\College\AY1819_Term2\CMPILER\CMPILER-FINAL-MP\models>cd .. 
+
+d:\College\AY1819_Term2\CMPILER\CMPILER-FINAL-MP>call node cli.js input/test6.pas 
+{
+  "type": "program",
+  "name": {
+    "type": "identifier",
+    "value": "test6"
+  },
+  "body": [
+    {
+      "type": "procedure",
+      "name": {
+        "value": "main",
+        "type": "identifier"
+      },
+      "body": [
+        {
+          "type": "call",
+          "name": {
+            "type": "identifier",
+            "value": "writeln"
+          },
+          "args": [
+            {
+              "type": "call",
+              "name": {
+                "type": "identifier",
+                "value": "max"
+              },
+              "args": [
+                {
+                  "value": "1",
+                  "type": "integer",
+                  "data_type": "integer"
+                },
+                {
+                  "value": "3",
+                  "type": "integer",
+                  "data_type": "integer"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "variables": [
+        {
+          "data_type": "integer",
+          "name": [
+            {
+              "type": "identifier",
+              "value": "i"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "routines": [],
+      "body": [
+        {
+          "type": "conditional operator",
+          "operator": "if-else",
+          "condition": {
+            "type": "binary operator",
+            "data_type": "boolean",
+            "operator": ">",
+            "args": [
+              {
+                "value": "num1",
+                "data_type": "integer",
+                "type": "identifier"
+              },
+              {
+                "value": "num2",
+                "data_type": "integer",
+                "type": "identifier"
+              }
+            ]
+          },
+          "if": [
+            {
+              "type": "binary operator",
+              "data_type": "boolean",
+              "operator": ":=",
+              "args": [
+                {
+                  "type": "identifier",
+                  "value": "result"
+                },
+                {
+                  "value": "num1",
+                  "data_type": "integer",
+                  "type": "identifier"
+                }
+              ]
+            }
+          ],
+          "else": [
+            {
+              "type": "binary operator",
+              "data_type": "boolean",
+              "operator": ":=",
+              "args": [
+                {
+                  "type": "identifier",
+                  "value": "result"
+                },
+                {
+                  "value": "num2",
+                  "data_type": "integer",
+                  "type": "identifier"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "binary operator",
+          "data_type": "boolean",
+          "operator": ":=",
+          "args": [
+            {
+              "type": "identifier",
+              "value": "max"
+            },
+            {
+              "value": "result",
+              "data_type": "integer",
+              "type": "identifier"
+            }
+          ]
+        }
+      ],
+      "type": "function",
+      "return_type": "integer",
+      "params": [
+        {
+          "data_type": "integer",
+          "name": [
+            {
+              "type": "identifier",
+              "value": "num1"
+            },
+            {
+              "type": "identifier",
+              "value": "num2"
+            }
+          ]
+        }
+      ],
+      "name": {
+        "type": "identifier",
+        "value": "max"
+      },
+      "variables": [
+        {
+          "data_type": "integer",
+          "name": [
+            {
+              "type": "identifier",
+              "value": "result"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

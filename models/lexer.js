@@ -3,14 +3,12 @@ const Lexer = require('lex')
 /* PERSONAL MODULES */
 const values = require('./values')
 
-class LexicalError extends Error {
-
-}
+class LexicalError extends Error { }
 
 tokens = []
 const lexer = new Lexer((token) => {
     lexer.debug && console.log("[" + token + "]" + " Unexpected character")
-    throw new LexicalError("Unexpected character token: \'" + token + "\'")
+    throw new LexicalError("[LEXICAL] Unexpected character token: \'" + token + "\'")
 })
 
 tokens = []

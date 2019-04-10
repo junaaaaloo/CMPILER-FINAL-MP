@@ -1,12 +1,21 @@
 program HelloWorld;
 
-var arrInt : array [1..20] of integer;
+var x, y: integer;
 begin
-    if (false) then 
-        for i:= 1 to 10 do 
-        begin
-            writeln(i);
-        end
+    {
+        readln(i);
+    if (i > 10) then
+        write('Greater than 10')
     else
-        writeln('WORLD');
+        write('Nope');
+    }
+
+    for x := 1 to 10 do
+    begin
+        for y := 1 to 10 do 
+        begin
+            write('* ')
+        end;
+        writeln();
+    end;
 end.

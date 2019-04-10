@@ -16,3 +16,4 @@ let tokens = lexer.lex()
 let stream = tokens.data.map((token, i) => { return token.value }).join(" ")
 
 let AST = parser.parse(stream)
+evaluator.evaluate(AST);

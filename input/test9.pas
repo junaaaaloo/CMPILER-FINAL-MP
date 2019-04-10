@@ -57,7 +57,7 @@ readln(r);
 
 f := 2 * r;
 e :=  PI * f;
-writeln('The circumference of the circle is ',e);
+writeln('The circumference of the circle is ',e:3);
 
 sum := 0;
 numbers[1] := 3;
