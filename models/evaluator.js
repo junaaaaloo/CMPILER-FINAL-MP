@@ -85,6 +85,14 @@ function message (str) {
     process.stdout.write(str)
     scanner.question(null, {hideEchoBack: true, mask: ""})
 }
+
+
+function debug () {
+    console.log(JSON.stringify(symbol_table, null, 2))
+    console.log(JSON.stringify(scope, null, 0))
+}
+
+
 function evaluate (AST, debug) {
     if (!AST) {
         return;
@@ -93,14 +101,14 @@ function evaluate (AST, debug) {
     if (AST.type == "program") {
         scope.unshift(AST.name.value)
         let subroutines = AST.routines
-        debug && message("PROGAM [" +AST.name.value+"]")
+        debug && message("PROGRAM: " +AST.name.value+"")
         for (i in subroutines) {
             evaluate(subroutines[i], debug)
         } 
     }
 
     if (AST.type == "procedure" || AST.type == "function") {
-        debug && message("FUNCTION [" + AST.name.value + "]")
+        debug && message("FUNCTION: " + AST.name.value)
         if (AST.routines) {
             let subroutines = AST.routines
             for (i in subroutines) {
@@ -168,7 +176,7 @@ function evaluate (AST, debug) {
 
         let constant_values = AST.const
         for (i in constant_values) {
-            
+                    
             let const_value = {
                 "name": constant_values[i].name,
                 "value": constant_values[i].value.replace(/[\']/g, ""),
@@ -225,26 +233,31 @@ function evaluate (AST, debug) {
     }
 
     if (AST.type == "integer") {
+        debug && message("INTEGER: " + AST.value)
         AST.value = parseInt(AST.value)
         return AST;
     }
 
     if (AST.type == "real") {
+        debug && message("REAL: " + AST.value)
         AST.value = parseFloat(AST.value)
         return AST;
     }
 
     if (AST.type == "string") {
+        debug && message("STRING: " + AST.value)
         AST.value = AST.value.replace(/'/g, "");
         return AST;
     }
 
     if (AST.type == "char") {
+        debug && message("CHAR: " + AST.value)
         AST.value = AST.value.replace(/'/g, "");
         return AST;
     }
 
     if (AST.type == "boolean") {
+        debug && message("BOOLEAN: " + AST.value)
         AST.value = (AST.value == "true")
         return AST;
     }
@@ -252,10 +265,11 @@ function evaluate (AST, debug) {
 
 
     if (AST.type == "unary operator") {
+        debug && message("UNARY OPERATOR [" + AST.operator + "]: " + AST.value)
         switch(AST.operator) {
             case "-":
                 return {
-                    type: AST.data_type,
+                    type: AST.data_type,  
                     value: evaluate(AST.args[0], debug).value * -1
                 }
             case "+":
@@ -273,11 +287,13 @@ function evaluate (AST, debug) {
     }
 
     if (AST.type == "array access") {
+        debug && message("ARRAY ACCESS: " + AST.name + " ")
         return symbol_table[AST.name][scope[0]].value[evaluate(AST.args, debug).value]
     }
 
 
     if (AST.type == "binary operator") {
+        debug && message("BINARY OPERATOR [" + AST.operator + "]: " + AST.args[0].value + ", " + (AST.args[1].value ? AST.args[1].value : AST.value[2] ));
         switch(AST.operator) {
             case "+":
                 return evaluate({
@@ -365,7 +381,7 @@ function evaluate (AST, debug) {
 
     if (AST.type == "call") {
         let call = AST.args.map((token, i) => { return token.value })
-        debug && message("FUNCTION CALL " + AST.name.value + " (" + call.join(", ") + ")")
+        debug && message("FUNCTION CALL: " + AST.name.value + " (" + call.join(", ") + ")")
         let arguments = []
         
         for (i in AST.args) {
@@ -377,6 +393,8 @@ function evaluate (AST, debug) {
 
 
     if (AST.type == "identifier") {
+        debug && message("IDENTIFIER: " + AST.value + " (" + scope.peek() + ") ")
+        
         for (i in scope) {
             if (symbol_table[AST.value] && symbol_table[AST.value][scope[i]])
                 break;
@@ -386,6 +404,7 @@ function evaluate (AST, debug) {
     }  
 
     if (AST.type == "ternary operator") {
+        debug && message("TERNARY OPERATOR [" + AST.operator + "]" + ": " + AST.args[0].value + "," + AST.args[2] + "," + AST.args[1]);
         switch(AST.operator) {
             case ':':
                 return evaluate({
@@ -398,6 +417,7 @@ function evaluate (AST, debug) {
     }
 
     if (AST.type == "conditional operator") {
+        debug && message("CONDITIONAL [" + AST.operator + "] " + EB* + "  (" + scope.peek() + ") ")
         switch(AST.operator) {
             case "if":
                 if (evaluate(AST.condition, debug).value) {
@@ -424,6 +444,7 @@ function evaluate (AST, debug) {
     }
 
     if (AST.type == "iterative operator") {
+        debug && message("ITERATIVE [" + AST.operator + "] " + "  (" + scope.peek() + ") ")
         switch(AST.operator) {
             case "for":
                 let limit = evaluate(AST.range[1], debug).value
@@ -457,11 +478,6 @@ function evaluate (AST, debug) {
                 break;
         }
     }
-}
-
-function debug () {
-    console.log(JSON.stringify(symbol_table, null, 2))
-    console.log(JSON.stringify(scope, null, 0))
 }
 
 module.exports.evaluate = evaluate

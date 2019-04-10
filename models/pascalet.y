@@ -626,7 +626,7 @@ statement:
 assignment:
     identifier ':=' expression
         { 
-            semantics.declared(symbol, $1)
+            semantics.declared(symbol, $1, scope.peek())
             var1 = symbol.lookup($1)
             semantics.same_types(var1, $3, {"string":"char", "real":"integer"})
             semantics.not_constant(var1)
@@ -639,7 +639,7 @@ assignment:
         } |
     identifier '[' expression ']' ':=' expression
         {
-            semantics.declared(symbol, $1)
+            semantics.declared(symbol, $1, scope.peek())
             var1 = symbol.lookup($1)
             semantics.same_types(var1, $6)
 
@@ -890,13 +890,13 @@ expression:
          } 
     | identifier
         { 
-            $$ = semantics.declared(symbol, $1, scope);
+            $$ = semantics.declared(symbol, $1, scope.peek());
             $$ = $$ ? $$ : symbol.lookup($1)
             $$.type = $$.type ? $$.type : "identifier"
         } 
     | identifier '(' function_parameter_list ')'
         { 
-            semantics.declared(symbol, $1,  scope);
+            semantics.declared(symbol, $1,  scope.peek());
             $$ = { 
                 type: 'call',
                 return_type: symbol.lookup($1) ? symbol.lookup($1).return_type : null,

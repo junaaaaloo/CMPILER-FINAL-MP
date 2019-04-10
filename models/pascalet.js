@@ -471,7 +471,7 @@ case 66:
 break;
 case 70:
  
-            semantics.declared(symbol, $$[$0-2])
+            semantics.declared(symbol, $$[$0-2], scope.peek())
             var1 = symbol.lookup($$[$0-2])
             semantics.same_types(var1, $$[$0], {"string":"char", "real":"integer"})
             semantics.not_constant(var1)
@@ -485,7 +485,7 @@ case 70:
 break;
 case 71:
 
-            semantics.declared(symbol, $$[$0-5])
+            semantics.declared(symbol, $$[$0-5], scope.peek())
             var1 = symbol.lookup($$[$0-5])
             semantics.same_types(var1, $$[$0])
 
@@ -679,14 +679,14 @@ case 95:
 break;
 case 96:
  
-            this.$ = semantics.declared(symbol, $$[$0], scope);
+            this.$ = semantics.declared(symbol, $$[$0], scope.peek());
             this.$ = this.$ ? this.$ : symbol.lookup($$[$0])
             this.$.type = this.$.type ? this.$.type : "identifier"
         
 break;
 case 97:
  
-            semantics.declared(symbol, $$[$0-3],  scope);
+            semantics.declared(symbol, $$[$0-3],  scope.peek());
             this.$ = { 
                 type: 'call',
                 return_type: symbol.lookup($$[$0-3]) ? symbol.lookup($$[$0-3]).return_type : null,
