@@ -1,10 +1,10 @@
 program test16;
 
-procedure p;
+function f:integer;
 begin
     write('HELLO!')
 end;
 
 begin 
-    p;
+    f;
 end.

@@ -253,6 +253,11 @@ function evaluate (AST) {
                     type: AST.data_type,
                     value: evaluate(AST.args[0]).value * -1
                 }
+            case "+":
+                return {
+                    type: AST.data_type,
+                    value: evaluate(AST.args[0]).value
+                }
             case "not":
                 return {
                     type: "boolean",

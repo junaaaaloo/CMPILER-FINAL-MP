@@ -138,7 +138,7 @@ true|false                          return 'BOOLEAN';
 %left '*' '/' '%' AND, MOD, DIV
 %left '<', '<=', '>', '>='
 %left '=', '<>'
-%left NOT  UMINUS
+%left NOT UMINUS UPLUS
 %left '(' ')'
 %left PROGRAM
 /* production rules */
@@ -234,6 +234,9 @@ type:
         } 
     | ARRAY '[' expression '.' '.' expression ']' OF TYPE
         { 
+            semantics.types($3, ["integer"])
+            semantics.types($6, ["integer"])
+            semantics.types($6, ["integer", "real", "string", "boolean"])
             $$ = { 
                 name: $1, 
                 range: [$3, $6], 
@@ -417,6 +420,19 @@ function_header:
                     symbol.add(var_name.value, variable.data_type)
                 }
             }
+        } 
+    | FUNCTION routine_name ':' type ';'
+        { 
+            $$ = { 
+                type: $1, 
+                return_type: $4, 
+                params: [], 
+                name: $2 
+            };
+
+            semantics.not_yet_declared(symbol, $2, scope.peek())
+            symbol.add($2.value, 'routine', null, $4)
+            scope.add($2.value)
         };
 
 procedure_header:
@@ -511,7 +527,8 @@ parameters_list:
         } 
     | parameter ';' parameters_list
         { 
-            $3.unshift($1); $$ = $3; 
+            $3.unshift($1); 
+            $$ = $3; 
         }; 
 
 parameter:
@@ -838,6 +855,15 @@ expression:
             } 
         } 
     | '-' expression %prec UMINUS
+        { 
+            semantics.types($2, ["integer", "real"]);
+            $$ = { 
+                type: 'unary operator', 
+                data_type: $2.data_type,
+                operator: $1, 
+                args: [$2] } 
+            } 
+    | '+' expression %prec UPLUS
         { 
             semantics.types($2, ["integer", "real"]);
             $$ = { 

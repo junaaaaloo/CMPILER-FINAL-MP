@@ -70,7 +70,7 @@ module.exports = {
         }
 
         let declared = symbol.lookup(item)
-        if (declared.data_type == "routine") {
+        if (declared && declared.data_type == "routine") {
             
             return {
                 type: 'call',
