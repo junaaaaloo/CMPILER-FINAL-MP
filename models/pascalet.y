@@ -333,7 +333,7 @@ routine:
 
 main:
     declarations_list routine_list body '.'
-        { 
+        {
             $$ = { 
                 type: 'procedure', 
                 name: { 
@@ -341,6 +341,20 @@ main:
                     type: 'identifier' 
                 }, 
                 body: $3, 
+                routines: $2 
+            }; 
+
+            $$ = Object.assign($$, $1);
+        }
+    | declarations_list routine_list declarations_list body '.'
+        { 
+            $$ = { 
+                type: 'procedure', 
+                name: { 
+                    value: 'main', 
+                    type: 'identifier' 
+                }, 
+                body: $4, 
                 routines: $2 
             }; 
             $$ = Object.assign($$, $1);
