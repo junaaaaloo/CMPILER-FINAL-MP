@@ -577,7 +577,7 @@ assignment:
     identifier ':=' expression
         { 
             semantics.declared(symbol, $1)
-            let var1 = symbol.lookup($1)
+            var1 = symbol.lookup($1)
             semantics.same_types(var1, $3, {"string":"char", "real":"integer"})
             semantics.not_constant(var1)
             $$ = { 
@@ -586,6 +586,27 @@ assignment:
                     operator: ':=', 
                     args: [$1, $3],
                 }
+        } |
+    identifier '[' expression ']' ':=' expression
+        {
+            semantics.declared(symbol, $1)
+            var1 = symbol.lookup($1)
+            semantics.same_types(var1, $3)
+
+            $$ = {
+                type: 'identifier',
+                data_type: 'boolean',
+                operator: ':=',
+                args: [
+                    {
+                        type: 'array access',
+                        name: $1.value, 
+                        data_type: var1.data_type, 
+                        args: $3
+                    },
+                    $6
+                ]
+            }
         };
 
 conditional:
@@ -830,7 +851,8 @@ expression:
             semantics.types($3, ["integer"])
             
             $$ = { 
-                type: 'array access', 
+                type: 'array access',
+                name: $1.value, 
                 data_type: symbol.lookup($1).data_type, 
                 args: $3 
             } 

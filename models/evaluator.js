@@ -7,7 +7,8 @@ let default_values = {
     "string": "",
     "integer": 0,
     "boolean": true,
-    "real": 0.0
+    "real": 0.0,
+    "array": []
 }
 
 function die (message) {
@@ -191,7 +192,6 @@ function evaluate (AST) {
                 
                 symbol_table[declaration.name[j].value][scope[0]] = declaration_symbol
             }
-            debug()
         }
 
         let statements = AST.body;
@@ -227,7 +227,7 @@ function evaluate (AST) {
         return AST;
     }
 
-    
+
 
     if (AST.type == "unary operator") {
         switch(AST.operator) {
@@ -243,6 +243,10 @@ function evaluate (AST) {
                 }
         }
     
+    }
+
+    if (AST.type == "array access") {
+        console.log(AST)
     }
 
     if (AST.type == "binary operator") {
@@ -339,11 +343,11 @@ function evaluate (AST) {
 
     if (AST.type == "identifier") {
         for (i in scope) {
-            if (symbol_table[AST.value][scope[i]])
+            if (symbol_table[AST.value] && symbol_table[AST.value][scope[i]])
                 break;
         }
             
-        return symbol_table[AST.value][scope[i]];
+        return symbol_table[AST.value] && symbol_table[AST.value][scope[i]];
     }  
 
     if (AST.type == "ternary operator") {

@@ -1,8 +1,19 @@
 
 let values = require('./values')
 function finalize_datatype (item) {
+    if (item.data_type && item.data_type.name == "array")
+        return item.data_type.data_type
+
     if (item.type == "array access") {
-        console.log(item)
+        lower = parseInt(item.data_type.range[0].value)
+        
+        upper = parseInt(item.data_type.range[1].value)
+
+        acessing = parseInt(item.args.value)
+
+        if (lower <= acessing <= upper) 
+            throw new Error("[SEMANTIC] Index array out of bounds: " + item.name + "[" + acessing + "]")
+
         return item.data_type.data_type
     }
 
@@ -37,7 +48,7 @@ module.exports = {
                 return;
                 
         if (data_type1 != data_type2)
-            throw new Error("[SEMANTIC] Datatype mismatch error: " + data_type1 + " != " + data_type2)
+            throw new Error("[SEMANTIC] Datatype mismatch error: " + JSON.stringify(data_type1) + " != " + data_type2)
     },
     types (item, types) {
         if (types.indexOf(item.data_type.name) == -1 && types.indexOf(item.data_type) == -1)
