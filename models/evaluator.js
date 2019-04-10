@@ -140,9 +140,9 @@ function evaluate (AST) {
                         
                         evaluate(this.data)
                         
-
                         if (this.data.return_type) {
                             let returned_data = (symbol_table[this.data.name.value][scope[0]])
+                            sc = scope.shift();
                             return returned_data
                         }
 
