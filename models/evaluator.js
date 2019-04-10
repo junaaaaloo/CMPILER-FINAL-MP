@@ -196,8 +196,8 @@ function evaluate (AST) {
                     symbol_table[declaration.name[j].value] = { }
                 
                 if (declaration.data_type && declaration.data_type.name == "array") {
-                    lower = evaluate({type:'integer', value: declaration_symbol.data_type.range[0].value}).value
-                    upper = evaluate({type:'integer', value: declaration_symbol.data_type.range[1].value}).value
+                    lower = evaluate(declaration_symbol.data_type.range[0]).value
+                    upper = evaluate(declaration_symbol.data_type.range[1]).value
                     
                     for (let k = lower; k <= upper; k++) {
                         declaration_symbol.values[k] = {
@@ -421,6 +421,7 @@ function evaluate (AST) {
                         evaluate(statement);
                     }
                 }
+                symbol_table[AST.variable.value][scope[0]].value = limit
                 break;
         }
     }

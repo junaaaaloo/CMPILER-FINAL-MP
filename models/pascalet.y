@@ -592,7 +592,7 @@ assignment:
         {
             semantics.declared(symbol, $1)
             var1 = symbol.lookup($1)
-            semantics.same_types(var1, $3)
+            semantics.same_types(var1, $6)
 
             $$ = {
                 type: 'binary operator',

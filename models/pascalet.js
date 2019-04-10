@@ -451,7 +451,7 @@ case 65:
 
             semantics.declared(symbol, $$[$0-5])
             var1 = symbol.lookup($$[$0-5])
-            semantics.same_types(var1, $$[$0-3])
+            semantics.same_types(var1, $$[$0])
 
             this.$ = {
                 type: 'binary operator',

@@ -37,7 +37,6 @@ module.exports = {
         else return data_type1;
     },
     same_types (item1, item2, exceptions) {
-
         let data_type1 = finalize_datatype(item1)
         let data_type2 = finalize_datatype(item2)
 
