@@ -38,7 +38,7 @@ for (i in values.rules) {
         if (rule.type && rule.token) {
             lexer.debug && console.log("[" + token + "] (" + rule.type + ")")
             tokens.push({
-                "value": token,
+                "value": token.toLowerCase(),
                 "type": rule.type
             })
         }

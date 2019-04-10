@@ -8,5 +8,5 @@ end;
 
 var i:real;
 begin
-    writeLn('HUH')
+    writeLn('HUH');;;;;;;;
 end.

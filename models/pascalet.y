@@ -75,6 +75,9 @@
 "do"                                return 'DO';
 "to"                                return 'TO';
 "for"                               return 'FOR';
+"while"                             return 'WHILE';
+"repeat"                            return 'REPEAT';
+"until"                             return 'UNTIL';
 "function"                          return 'FUNCTION';
 "procedure"                         return 'PROCEDURE';
 "const"                             return 'CONST';
@@ -599,7 +602,11 @@ statement_list:
         };
 
 statement: 
-    assignment 
+    ';'
+        {
+
+        }
+    | assignment 
         {
             $$ = $1;
         }
@@ -673,11 +680,7 @@ conditional:
             } 
         };
 statement_blocks:
-    empty 
-        {
-            $$ = []
-        }
-    | statement
+    statement
         { 
             $$ = [ $1 ] 
         } 
@@ -967,6 +970,14 @@ iterative_loop:
     for_loop
         { 
             $$ = $1 
+        }
+    | while_loop
+        {
+            $$ = $1
+        }
+    | repeat_until_loop
+        {
+            $$ = $1
         };
 
 for_loop:
@@ -981,5 +992,31 @@ for_loop:
                 statements: $8, 
                 variable: $2, 
                 range: [$4, $6] 
+            } 
+        };
+
+while_loop:
+    WHILE expression DO statement_blocks
+        { 
+            semantics.declared(symbol, $2, scope.peek())
+            semantics.types($2, ["boolean"])
+            $$ = { 
+                type: "iterative operator", 
+                operator: $1, 
+                statements: $4,
+                condition: $2
+            } 
+        };
+
+repeat_until_loop:
+    REPEAT statement_list UNTIL expression
+        {
+            semantics.declared(symbol, $2, scope.peek())
+            semantics.types($2, ["boolean"])
+            $$ = { 
+                type: "iterative operator", 
+                operator: "repeat-until", 
+                statements: $2,
+                condition: $2
             } 
         };

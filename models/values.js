@@ -22,6 +22,8 @@ let keywords = [
     "to",
     "of",
     "do",
+    "while",
+    
     /* OPERATORS */
     "mod",
     "div",

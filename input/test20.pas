@@ -1,5 +1,7 @@
 PROGRAM MAIN;
 
+
+var chr : char;
 VAR
   a, b   : integer;
   a1	 : iNtEgEr;
@@ -54,8 +56,6 @@ begin
   writeln('e1 is ', e1);				(*// e1 is true*)
   
 end;
-
-var chr : char;
 
 BEGIN {MAIN}
   assignStuff();
