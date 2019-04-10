@@ -116,9 +116,9 @@
 true|false                          return 'BOOLEAN';
 \'.\'                               return 'CHARACTER';
 \'(\\.|[^'\\])*\'                   return 'STRING';
+char|integer|boolean|string|real    return 'TYPE';
 [$a-zA-Z_]+[A-Za-z0-9_]*            return 'IDENTIFIER';
 <<EOF>>                             return 'EOF';
-char|integer|boolean|string|real    return 'TYPE';
 
 /lex
 %right routine_list main body

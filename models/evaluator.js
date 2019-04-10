@@ -93,14 +93,14 @@ function evaluate (AST, debug) {
     if (AST.type == "program") {
         scope.unshift(AST.name.value)
         let subroutines = AST.routines
-        debug && message("Running the program " +AST.name.value)
+        debug && message("PROGAM [" +AST.name.value+"]")
         for (i in subroutines) {
             evaluate(subroutines[i], debug)
         } 
     }
 
     if (AST.type == "procedure" || AST.type == "function") {
-        debug && message("FUNCTION: " + JSON.stringify(AST))
+        debug && message("FUNCTION [" + AST.name.value + "]")
         if (AST.routines) {
             let subroutines = AST.routines
             for (i in subroutines) {
@@ -364,6 +364,8 @@ function evaluate (AST, debug) {
     }
 
     if (AST.type == "call") {
+        let call = AST.args.map((token, i) => { return token.value })
+        debug && message("FUNCTION CALL " + AST.name.value + " (" + call.join(", ") + ")")
         let arguments = []
         
         for (i in AST.args) {

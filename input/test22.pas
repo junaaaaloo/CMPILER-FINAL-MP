@@ -1,4 +1,4 @@
-program string;
+program stringcc;
 
 begin
     write('STRING CONCATENATION')
