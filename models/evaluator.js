@@ -265,7 +265,7 @@ function evaluate (AST, debug) {
 
 
     if (AST.type == "unary operator") {
-        debug && message("UNARY OPERATOR [" + AST.operator + "]: " + AST.value)
+        debug && message("UNARY OPERATOR [" + AST.operator + "]")
         switch(AST.operator) {
             case "-":
                 return {
@@ -293,7 +293,7 @@ function evaluate (AST, debug) {
 
 
     if (AST.type == "binary operator") {
-        debug && message("BINARY OPERATOR [" + AST.operator + "]: " + AST.args[0].value + ", " + (AST.args[1].value ? AST.args[1].value : AST.value[2] ));
+        debug && message("BINARY OPERATOR [" + AST.operator + "]");
         switch(AST.operator) {
             case "+":
                 return evaluate({
@@ -380,7 +380,7 @@ function evaluate (AST, debug) {
     }
 
     if (AST.type == "call") {
-        let call = AST.args.map((token, i) => { return token.value })
+        let call = AST.args ? AST.args.map((token, i) => { return token.value }) : []
         debug && message("FUNCTION CALL: " + AST.name.value + " (" + call.join(", ") + ")")
         let arguments = []
         
@@ -393,7 +393,7 @@ function evaluate (AST, debug) {
 
 
     if (AST.type == "identifier") {
-        debug && message("IDENTIFIER: " + AST.value + " (" + scope.peek() + ") ")
+        debug && message("IDENTIFIER: " + AST.value + " (" + scope[0] + ") ")
         
         for (i in scope) {
             if (symbol_table[AST.value] && symbol_table[AST.value][scope[i]])
@@ -404,7 +404,7 @@ function evaluate (AST, debug) {
     }  
 
     if (AST.type == "ternary operator") {
-        debug && message("TERNARY OPERATOR [" + AST.operator + "]" + ": " + AST.args[0].value + "," + AST.args[2] + "," + AST.args[1]);
+        debug && message("TERNARY OPERATOR [" + AST.operator + "]" + ": " + AST.args[0].value + "," + AST.args[2].value + "," + AST.args[1].value);
         switch(AST.operator) {
             case ':':
                 return evaluate({
@@ -417,7 +417,7 @@ function evaluate (AST, debug) {
     }
 
     if (AST.type == "conditional operator") {
-        debug && message("CONDITIONAL [" + AST.operator + "] " + EB* + "  (" + scope.peek() + ") ")
+        debug && message("CONDITIONAL [" + AST.operator + "] ")
         switch(AST.operator) {
             case "if":
                 if (evaluate(AST.condition, debug).value) {
@@ -444,7 +444,7 @@ function evaluate (AST, debug) {
     }
 
     if (AST.type == "iterative operator") {
-        debug && message("ITERATIVE [" + AST.operator + "] " + "  (" + scope.peek() + ") ")
+        debug && message("ITERATIVE [" + AST.operator + "] ")
         switch(AST.operator) {
             case "for":
                 let limit = evaluate(AST.range[1], debug).value

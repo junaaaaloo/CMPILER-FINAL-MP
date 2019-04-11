@@ -17,5 +17,5 @@ let tokens = lexer.lex()
 let stream = tokens.data.map((token, i) => { return token.value }).join(" ")
 
 let AST = parser.parse(stream)
-console.log("** DEBUGGING MODE **")
+debug && console.log("** DEBUGGING MODE **")
 evaluator.evaluate(AST, debug);

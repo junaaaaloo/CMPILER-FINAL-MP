@@ -2,7 +2,7 @@ program main;
 var fa:string;
 var i:integer;
 begin
-     := 'HELLO WORLD';
+    fa := 'HELLO WORLD';
     i := 0;
 
     while (i < 10) do 
@@ -10,8 +10,8 @@ begin
             writeln(i);
             i:= i + 1;
         end;
-     := 'HELLO WORLD';
-c
+    fa := 'HELLO WORLD';
+
     i := 0;
     repeat
         i := i + 1;
